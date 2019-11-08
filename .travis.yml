@@ -23,7 +23,7 @@ deploy:
     on:
       branch: master
   - provider: codedeploy
-    bucket: "ucc-website"
+    bucket: "letmedraw-backend-deploy"
     region: us-east-1
     key: latest/letmedraw.zip
     application: cd-letmedraw
