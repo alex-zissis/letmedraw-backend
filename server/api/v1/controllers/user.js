@@ -22,14 +22,21 @@ exports.get_user = async (req, res, next) => {
 }
 
 exports.new_user = async (req, res, next) => {
-    console.log(req.body);
     const userId = Math.floor(Math.random() * 1000000);
 
     const password = await hashAndSalt(req.body.password);
 
-    const user = new User({ userId: userId, firstName: req.body.firstName, lastName: req.body.lastName, password: password });
+    const user = new User({ userId: userId, firstName: req.body.firstName, lastName: req.body.lastName, password: password, email: req.body.email });
     const result = await user.save();
 
     // INSERT INTO users (firstName, lastName) VALUES (${req.body.firstName}, ${req.body.lastName});
     res.status(200).json({ status: 'success' });
+}
+
+exports.login = async (req, res, next) => {
+    const user = await User.findOne({ email: req.body.email });
+    const result = await bcrypt.compare(req.body.password, user.password);
+
+    const returnCode = result ? 200 : 403;
+    res.status(returnCode).json({ 'status': result });
 }
