@@ -4,6 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
+    "lint": "echo \"i am linting\"",
     "test": "echo \"no test specified\""
   },
   "author": "Alex Zissis",
