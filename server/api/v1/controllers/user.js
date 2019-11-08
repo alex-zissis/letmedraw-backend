@@ -1,3 +1,17 @@
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+mongoose.connect('mongodb://localhost:27017/letmedraw', { useNewUrlParser: true });
+
+const saltRounds = 10;
+
+const User = require('../../../models/User');
+
+const hashAndSalt = async (plainTextPassword) => {
+    const salt = await bcrypt.genSalt();
+    const hash = await bcrypt.hash(plainTextPassword, salt);
+    return hash;
+}
+
 exports.hello = async (req, res, next) => {
     res.status(200).json({ 'status': 'hello' });
 };
@@ -9,7 +23,13 @@ exports.get_user = async (req, res, next) => {
 
 exports.new_user = async (req, res, next) => {
     console.log(req.body);
-    // store that in the data
+    const userId = Math.floor(Math.random() * 1000000);
+
+    const password = await hashAndSalt(req.body.password);
+
+    const user = new User({ userId: userId, firstName: req.body.firstName, lastName: req.body.lastName, password: password });
+    const result = await user.save();
+
     // INSERT INTO users (firstName, lastName) VALUES (${req.body.firstName}, ${req.body.lastName});
-    res.status(200).json({status: 'success'});
+    res.status(200).json({ status: 'success' });
 }
