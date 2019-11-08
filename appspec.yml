@@ -1,0 +1,34 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /opt/app/letmedraw/
+permissions:
+  - object: /opt/app/letmedraw/
+    owner: centos
+    group: centos
+    mode: 755
+    type:
+      - directory
+      - file
+hooks:
+  BeforeInstall:
+    - location: deploy-scripts/install.sh
+      timeout: 300
+      runas: root
+  AfterInstall:
+    - location: deploy-scripts/post_install.sh
+      timeout: 600
+      runas: centos
+  ApplicationStart:
+    - location: deploy-scripts/run.sh
+      timeout: 120
+      runas: centos
+  ValidateService:
+    - location: deploy-scripts/validate.sh
+      timeout: 600
+      runas: centos
+  ApplicationStop:
+    - location: deploy-scripts/stop.sh
+      timeout: 120
+      runas: centos

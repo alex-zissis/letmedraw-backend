@@ -1,0 +1,36 @@
+language: node_js
+sudo: true
+node_js: "12"
+services: mongodb
+
+before_script:
+  - "npm run lint"
+  - "chmod +x deploy-scripts/*"
+  - "mkdir -p dist"
+
+script:
+  - "npm run test"
+  - "./deploy-scripts/envvars.sh"
+  - "zip -r dist/letmedraw.zip ./ -x '*node_modules*'"
+
+deploy:
+  - provider: s3
+    bucket: letmedraw-backend-deploy
+    region: us-east-1
+    local_dir: "./dist"
+    upload_dir: "latest"
+    skip_cleanup: true
+    on:
+      branch: master
+  - provider: codedeploy
+    bucket: "ucc-website"
+    region: ap-southeast-2
+    key: latest/letmedraw.zip
+    application: cd-letmedraw
+    deployment_group: cd-dg-lmdws01
+    on:
+      branch: master
+
+notifications:
+  email:
+    - alex_z9@outlook.com
