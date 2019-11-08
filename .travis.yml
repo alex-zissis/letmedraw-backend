@@ -24,7 +24,7 @@ deploy:
       branch: master
   - provider: codedeploy
     bucket: "ucc-website"
-    region: ap-southeast-2
+    region: us-east-1
     key: latest/letmedraw.zip
     application: cd-letmedraw
     deployment_group: cd-dg-lmdws01
