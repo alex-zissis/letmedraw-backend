@@ -2,6 +2,7 @@
 set -e
 
 source /opt/app/letmedraw/.env
+rm -rf "/opt/app/letmedraw-$ENVIRONMENT"
 mv "/opt/app/letmedraw" "/opt/app/letmedraw-$ENVIRONMENT"
 cd "/opt/app/letmedraw-$ENVIRONMENT"
 
