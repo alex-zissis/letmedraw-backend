@@ -17,5 +17,5 @@ if [ $ENVIRONMENT -eq "staging"]; then
     $DBNAME="letmedraw-staging"
 fi
 
-sudo docker run --name "letmedraw-$ENVIRONMENT" --env "DBPORT=$DBPORT" --env "DBNAME=$DBNAME" --env "DBHOST=$DBHOST" letmedraw:$PACKAGE_VERSION"
+docker run --name "letmedraw-$ENVIRONMENT" --env "DBPORT=$DBPORT" --env "DBNAME=$DBNAME" --env "DBHOST=$DBHOST" letmedraw:$PACKAGE_VERSION"
 

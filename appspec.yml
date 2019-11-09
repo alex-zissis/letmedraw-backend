@@ -19,11 +19,11 @@ hooks:
   AfterInstall:
     - location: deploy-scripts/post_install.sh
       timeout: 600
-      runas: centos
+      runas: root
   ApplicationStart:
     - location: deploy-scripts/run.sh
       timeout: 120
-      runas: centos
+      runas: root
   ValidateService:
     - location: deploy-scripts/validate.sh
       timeout: 600
@@ -31,4 +31,4 @@ hooks:
   ApplicationStop:
     - location: deploy-scripts/stop.sh
       timeout: 120
-      runas: centos
+      runas: root
