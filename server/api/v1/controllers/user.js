@@ -12,16 +12,16 @@ const hashAndSalt = async (plainTextPassword) => {
     return hash;
 }
 
-exports.hello = async (req, res, next) => {
+exports.helloHandler = async (req, res, next) => {
     res.status(200).json({ 'status': 'hello' });
 };
 
-exports.get_user = async (req, res, next) => {
+exports.getUserHandler = async (req, res, next) => {
     // SELECT user_id, firstName, surname FROM users WHERE user_id = ${req.params.userId}
     res.status(200).json({ userId: req.params.user_id, firstName: 'Alex', lastName: 'Zissis' });
 }
 
-exports.new_user = async (req, res, next) => {
+exports.newUserHandler = async (req, res, next) => {
     const userId = Math.floor(Math.random() * 1000000);
 
     const password = await hashAndSalt(req.body.password);
@@ -33,7 +33,7 @@ exports.new_user = async (req, res, next) => {
     res.status(200).json({ status: 'success' });
 }
 
-exports.login = async (req, res, next) => {
+exports.loginHandler = async (req, res, next) => {
     const user = await User.findOne({ email: req.body.email });
     const result = await bcrypt.compare(req.body.password, user.password);
 
