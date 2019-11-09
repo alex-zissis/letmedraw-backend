@@ -17,19 +17,21 @@ deploy:
   - provider: s3
     bucket: letmedraw-backend-deploy
     region: us-east-1
+    on:
+      all_branches: true
+      condition: $TRAVIS_BRANCH =~ ^(develop|master)$
     local_dir: "./dist"
     upload_dir: "latest"
     skip_cleanup: true
-    on:
-      branch: master
   - provider: codedeploy
     bucket: "letmedraw-backend-deploy"
     region: us-east-1
+    on:
+      all_branches: true
+      condition: $TRAVIS_BRANCH =~ ^(develop|master)$
     key: latest/letmedraw.zip
     application: cd-letmedraw
     deployment_group: cd-dg-lmdws01
-    on:
-      branch: master
 
 notifications:
   email:
