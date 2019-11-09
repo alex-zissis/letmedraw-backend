@@ -7,10 +7,10 @@ before_script:
   - "npm run lint"
   - "chmod +x deploy-scripts/*"
   - "mkdir -p dist"
+  - "./deploy-scripts/envvars.sh"
 
 script:
   - "npm run test"
-  - "./deploy-scripts/envvars.sh"
   - "zip -r dist/letmedraw.zip ./ -x '*node_modules*'"
 
 deploy:

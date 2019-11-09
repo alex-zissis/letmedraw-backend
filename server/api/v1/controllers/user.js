@@ -1,13 +1,13 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-mongoose.connect('mongodb://localhost:27017/letmedraw', { useNewUrlParser: true });
+mongoose.connect(`mongodb://${process.env.DBHOST}:${process.env.DBPORT}/${process.env.DBNAME}`, { useNewUrlParser: true });
 
 const saltRounds = 10;
 
 const User = require('../../../models/User');
 
 const hashAndSalt = async (plainTextPassword) => {
-    const salt = await bcrypt.genSalt();
+    const salt = await bcrypt.genSalt(saltRounds);
     const hash = await bcrypt.hash(plainTextPassword, salt);
     return hash;
 }

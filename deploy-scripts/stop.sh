@@ -1,2 +1,5 @@
 #!/usr/bin/env bash
-pm2 stop letmedraw || true
+name="letmedraw-$ENVIRONMENT"
+
+docker stop $name
+docker rm $name
