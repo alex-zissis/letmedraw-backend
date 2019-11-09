@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-cd "/opt/app/letmedraw-$ENVIRONMENT"
+cd "/opt/app/"
+ 
+cd $(ls -td letmedraw* | head -1)
+
+source .env
 
 DBPORT=27017
 DBNAME=letmedraw
