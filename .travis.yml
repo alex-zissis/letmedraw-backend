@@ -8,6 +8,7 @@ before_script:
   - "chmod +x deploy-scripts/*"
   - "mkdir -p dist"
   - "./deploy-scripts/envvars.sh"
+  - "cat ./.env"
 
 script:
   - "npm run test"
