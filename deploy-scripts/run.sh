@@ -2,7 +2,6 @@
 cd "/opt/app/"
  
 cd $(ls -td letmedraw* | head -1)
-
 source .env
 
 DBPORT=27017
@@ -23,6 +22,4 @@ if [ $ENVIRONMENT -eq "staging" ]; then
     $PORT=5000
 fi
 
-docker run -d --name "letmedraw-$ENVIRONMENT" --env "DBPORT=$DBPORT" --env "DBNAME=$DBNAME" --env "DBHOST=$DBHOST" -p "$PORT:3000"  "letmedraw:$PACKAGE_VERSION"
-
-
+docker run -d --name "letmedraw-$ENVIRONMENT" --env "DBPORT=$DBPORT" --env "DBNAME=$DBNAME" --env "DBHOST=$DBHOST" -p "$PORT:3000" "letmedraw:$PACKAGE_VERSION"

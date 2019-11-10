@@ -4,4 +4,3 @@ if [ $TRAVIS_BRANCH = "MASTER" ]; then
 else 
     echo "export ENVIRONMENT=staging" > .env
 fi
-
