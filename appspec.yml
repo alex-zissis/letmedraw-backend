@@ -28,7 +28,7 @@ hooks:
     - location: deploy-scripts/validate.sh
       timeout: 600
       runas: centos
-  ApplicationStop:
-    - location: deploy-scripts/stop.sh
-      timeout: 120
-      runas: root
+  # ApplicationStop:
+  #   - location: deploy-scripts/stop.sh
+  #     timeout: 120
+  #     runas: root

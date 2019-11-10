@@ -20,4 +20,8 @@ if [ $ENVIRONMENT == "staging" ]; then
     PORT=5000
 fi
 
-docker run -d --name "letmedraw-$ENVIRONMENT" --env "DBPORT=$DBPORT" --env "DBNAME=$DBNAME" --env "DBHOST=$(hostname -I | awk '{print $1}')" --expose 3000 -p "$PORT:3000" "letmedraw:$PACKAGE_VERSION"
+NAME="letmedraw-$ENVIRONMENT"
+docker stop $NAME || echo "No such image $NAME"
+docker rm $NAME || echo "No such image $NAME"
+
+docker run -d --name $NAME --env "DBPORT=$DBPORT" --env "DBNAME=$DBNAME" --env "DBHOST=$(hostname -I | awk '{print $1}')" --expose 3000 -p "$PORT:3000" "letmedraw:$PACKAGE_VERSION"
