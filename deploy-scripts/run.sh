@@ -15,7 +15,7 @@ PACKAGE_VERSION=$(cat package.json \
   | sed 's/[",]//g' \
   | tr -d '[[:space:]]')
 
-if [ $ENVIRONMENT -eq "staging" ]; then
+if [ $ENVIRONMENT == "staging" ]; then
     $DBNAME="letmedraw-staging"
     $PORT=5000
 fi
