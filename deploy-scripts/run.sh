@@ -16,8 +16,8 @@ PACKAGE_VERSION=$(cat package.json \
   | tr -d '[[:space:]]')
 
 if [ $ENVIRONMENT == "staging" ]; then
-    $DBNAME="letmedraw-staging"
-    $PORT=5000
+    DBNAME="letmedraw-staging"
+    PORT=5000
 fi
 
-docker run -d --name "letmedraw-$ENVIRONMENT" --env "DBPORT=$DBPORT" --env "DBNAME=$DBNAME" --env "DBHOST=$DBHOST" --expose 3000 -p $PORT:3000 letmedraw
+docker run -d --name "letmedraw-$ENVIRONMENT" --env "DBPORT=$DBPORT" --env "DBNAME=$DBNAME" --env "DBHOST=$DBHOST" --expose 3000 -p "$PORT:3000" "letmedraw:$PACKAGE_VERSION"
