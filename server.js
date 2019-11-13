@@ -7,7 +7,9 @@ const io = require('socket.io')(server);
 const uuidv4 = require('uuid/v4');
 
 server.on('listening', () => {
-    console.log(`Server is running on port ${port}`);
+    if (process.env.NODE_NO_WARNINGS !== '1') {
+        console.log(`Server is running on port ${port}`);
+    }
 });
 server.listen(port);
 

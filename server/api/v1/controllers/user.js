@@ -19,12 +19,27 @@ const validatePassword = (plainTextPassword) => {
 }
 
 const validateEmail = (email) => {
-    //TODO
-    return true;
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 const validateUsername = (username) => {
-    // TODO
+    return /^[a-z0-9_-]{3,30}$/.test(username)
+}
+
+const getUser = async (userId) => {
+    let user;
+    try {
+        user = await User.findOne({ userId: userId, deleted: false }, 'userId firstName lastName username email').exec();
+    } catch (e) {
+        return { status: 500, json: { error: 'undefinedError', message: "Something went wrong" } }
+    }
+
+    if (user === null) return { status: 400, json: { error: 'doesNotExist', message: "User does not exist" } }
+
+    return {
+        status: 200,
+        json: user
+    }
 }
 
 const checkUserId = async (userId) => {
@@ -38,7 +53,7 @@ const generateUserId = async () => {
     let userId;
     while (!valid && cnt < attempts) {
         userId = Math.floor(Math.random() * 100000000);
-        valid = checkUserId(userId);
+        valid = await checkUserId(userId);
         cnt++;
     }
 
@@ -54,10 +69,10 @@ const newUser = async (firstName, lastName, email, username, plainTextPassword) 
     try {
         password = await hashAndSalt(plainTextPassword);
     } catch (e) {
-        return { status: 500, json: { error: "passwordHashingError", message: "There was an error hashing the passwoord, please try again." } }
+        return { status: 500, json: { error: "passwordHashingError", message: "There was an error hashing the password, please try again." } }
     }
 
-    const user = new User({ userId: userId, firstName: firstName, lastName: lastName, password: password, email: email, username: username });
+    const user = new User({ userId: userId, firstName: firstName, deleted: false, lastName: lastName, password: password, email: email, username: username });
     let result;
 
     try {
@@ -83,13 +98,70 @@ const newUser = async (firstName, lastName, email, username, plainTextPassword) 
     }
 }
 
+const deleteUser = async userId => {
+    let user;
+    try {
+        user = await User.findOne({ userId: userId, deleted: false }).exec();
+        if (user === null) return { status: 400, json: { error: "doesNotExist", message: `User does not exist` } }
+        user.deleted = true;
+        await user.save();
+    } catch (e) {
+        return { status: 500, json: { error: 'undefinedError', message: "Something went wrong" } }
+    }
+
+    return { status: 200, json: { message: "User deleted successfully" } }
+}
+
+const login = async (email, password) => {
+    let user;
+    try {
+        user = await User.findOne({ email: email, deleted: false }).exec();
+    } catch (e) {
+        return { status: 500, json: { error: 'undefinedError', message: "Something went wrong" } }
+    }
+
+    if (user === null) return { status: 400, json: { error: "doesNotExist", message: `Email does not exist` } }
+
+    let match;
+    try {
+        match = await bcrypt.compare(password, user.password);
+    } catch (e) {
+        return { status: 500, json: { error: 'undefinedError', message: "Something went wrong" } }
+    }
+
+    if (!match) return { status: 403, json: { error: "invalidPassword", message: `Invalid Password` } }
+
+    // TODO - JWT
+
+    return {
+        status: 200,
+        json: { message: "Login successful" }
+    }
+}
+
+const getAllUsers = async () => {
+    let users;
+    try {
+        users = await User.find({ deleted: false }, 'userId firstName lastName username email').exec();
+    } catch (e) {
+        return { status: 500, json: { error: 'undefinedError', message: "Something went wrong" } }
+    }
+
+    return { status: 200, json: users }
+}
+
 exports.helloHandler = async (req, res, next) => {
     res.status(200).json({ 'status': 'hello' });
 };
 
+exports.getAllUsersHandler = async (req, res, next) => {
+    const result = await getAllUsers();
+    return res.status(result.status).json(result.json);
+}
+
 exports.getUserHandler = async (req, res, next) => {
-    // SELECT user_id, firstName, surname FROM users WHERE user_id = ${req.params.userId}
-    res.status(200).json({ userId: req.params.user_id, firstName: 'Alex', lastName: 'Zissis' });
+    const result = await getUser(req.params.user_id);
+    return res.status(result.status).json(result.json);
 }
 
 exports.newUserHandler = async (req, res, next) => {
@@ -107,16 +179,28 @@ exports.newUserHandler = async (req, res, next) => {
 
     if (!validatePassword(req.body.password)) return res.status(400).json({ error: 'invalidPassword', message: `Password doesn't meeet validity requirements` });
     if (!validateEmail(req.body.email)) return res.status(400).json({ error: 'invalidEmail', message: `Email is not valid` });
+    if (!validateUsername(req.body.username)) return res.status(400).json({ error: 'invalidUsername', message: `Username is not valid` });
 
     const newUserResult = await newUser(req.body.firstName, req.body.lastName, req.body.email, req.body.username, req.body.password);
 
     return res.status(newUserResult.status).json(newUserResult.json);
 }
 
-exports.loginHandler = async (req, res, next) => {
-    const user = await User.findOne({ email: req.body.email });
-    const result = await bcrypt.compare(req.body.password, user.password);
+exports.deleteUserHandler = async (req, res, next) => {
+    if (req.params.user_id === null && req.params.user_id === undefined) return res.status(400).json({ error: 'noUserId', message: 'User ID not provided' })
+    const result = await deleteUser(req.params.user_id);
+    return res.status(result.status).json(result.json);
+}
 
-    const returnCode = result ? 200 : 403;
-    res.status(returnCode).json({ 'status': result });
+exports.loginHandler = async (req, res, next) => {
+    const validationRes = commonFuncs.validateReqBody(
+        [
+            { name: 'password', min: 8, max: 30 },
+            { name: 'email', min: 5, max: 80 },
+        ], req.body
+    );
+    if (validationRes !== true) return res.status(validationRes.status).json(validationRes.json);
+
+    const result = await login(req.body.email, req.body.password);
+    res.status(result.status).json(result.json);
 }

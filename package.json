@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "lint": "echo \"i am linting\"",
-    "test": "echo \"no test specified\""
+    "test": "export NODE_NO_WARNINGS=1 && mocha  --timeout 1000000 --exit"
   },
   "author": "Alex Zissis",
   "license": "ISC",
@@ -17,5 +17,10 @@
     "mongoose": "^5.7.9",
     "socket.io": "^2.3.0",
     "uuid": "^3.3.3"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "mocha": "^6.2.2"
   }
 }

@@ -30,7 +30,14 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true,
         index: true
+    },
+    deleted: {
+        type: Boolean,
+        required: true,
+        index: true
     }
+}, {
+    timestamps: true
 });
 
 const User = mongoose.model('User', userSchema);
